@@ -1,0 +1,18 @@
+__pycache__/
+*.pyc
+
+# local secrets
+.ark_api_key
+.gemini_api_key
+.ark_base_url
+
+# local runtime/config
+certs/
+data/
+debug_inputs/
+
+# local notes and scratch files
+_snippet.txt
+_run_server_snippet.txt
+d5ffb0a0d77043ddb34b122359f64549.jpg
+深圳大学城站终极指南.pdf

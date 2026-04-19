@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TapShow MVP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Nunito:wght@700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css?v=20260419c" />
+  </head>
+  <body>
+    <div class="bg-blobs" aria-hidden="true">
+      <span class="blob blob-violet"></span>
+      <span class="blob blob-pink"></span>
+      <span class="blob blob-blue"></span>
+    </div>
+
+    <div id="generation-overlay" class="generation-overlay" aria-hidden="true">
+      <div class="generation-spell clay-card">
+        <div class="generation-rings" aria-hidden="true">
+          <span class="generation-ring generation-ring-outer"></span>
+          <span class="generation-ring generation-ring-inner"></span>
+          <span class="generation-core"></span>
+        </div>
+        <p class="generation-title">创意法阵启动中...</p>
+      </div>
+    </div>
+
+    <div class="app-shell">
+      <main class="content">
+        <section class="panel active" id="panel-create">
+          <div class="workspace dual-stage">
+            <section class="stage-panel clay-card">
+              <div class="preview-actions preview-actions-dual">
+                <div class="controls controls-compact">
+                  <button id="capture-photo" disabled>拍照</button>
+                  <button id="clear-sketch">清空草图</button>
+                  <button id="generate-sticker" class="primary" disabled>生成贴图</button>
+                </div>
+
+                <div class="brush-toolbar">
+                  <span>画笔颜色</span>
+                  <div class="brush-slider-wrap">
+                    <input id="brush-hue" class="brush-slider" type="range" min="0" max="360" value="12" />
+                    <span id="brush-color-preview" class="brush-color-preview"></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="camera-stage" id="camera-stage">
+                <video id="camera-feed" autoplay playsinline muted></video>
+                <img id="base-image" alt="底图" />
+                <canvas id="sketch-layer"></canvas>
+              </div>
+
+              <div class="mini-section stage-inputs">
+                <div id="input-image-list" class="mini-tile-list"></div>
+              </div>
+            </section>
+
+            <section class="stage-panel clay-card">
+              <div class="preview-actions preview-actions-dual">
+                <div class="controls controls-compact">
+                  <button id="save-sticker" disabled>保存贴图</button>
+                  <button id="save-template" disabled>保存模板</button>
+                  <button id="save-capture" disabled>保存照片</button>
+                </div>
+
+                <div class="controls controls-compact right-controls">
+                  <button id="toggle-static-mode">静态摆放</button>
+                </div>
+              </div>
+
+              <div class="preview-stage" id="preview-stage">
+                <video id="preview-feed" autoplay playsinline muted></video>
+                <img id="sticker-preview" alt="贴图预览" />
+              </div>
+
+              <div class="mini-section">
+                <div id="candidate-list" class="mini-tile-list"></div>
+              </div>
+            </section>
+          </div>
+
+          <p id="status-text" class="sr-only">正在准备摄像头</p>
+          <p id="fixed-prompt" class="sr-only"></p>
+          <div id="sticker-meta" class="sr-only"></div>
+          <div id="anchor-buttons" class="sr-only"></div>
+          <span id="tracking-status" class="sr-only">跟踪器未初始化</span>
+        </section>
+
+        <section class="panel" id="panel-multi">
+          <div class="multi-workspace">
+            <section class="clay-card multi-room-card">
+              <div class="multi-room-line">
+                <div class="multi-room-title-wrap">
+                  <h3>同一 Wi‑Fi 双人房间</h3>
+                  <span id="multi-connection-state" class="multi-state-pill">未连接</span>
+                </div>
+                <input id="multi-display-name" type="text" placeholder="你的昵称" value="创作者A" />
+                <div class="controls controls-compact">
+                  <button id="multi-create-room">创建房间</button>
+                  <button id="multi-join-room">加入房间</button>
+                  <button id="multi-copy-room">复制房间号</button>
+                </div>
+              </div>
+
+              <div class="multi-room-line">
+                <input id="multi-room-id" type="text" placeholder="输入房间号" />
+                <div class="multi-room-meta">
+                  <div class="meta-chip">当前房间：<span id="multi-room-label">未创建</span></div>
+                  <div class="meta-chip">当前身份：<span id="multi-role-label">未加入</span></div>
+                  <div class="meta-chip">对方状态：<span id="multi-remote-label">未加入</span></div>
+                </div>
+              </div>
+            </section>
+
+            <div class="multi-stage-grid">
+              <section class="stage-panel clay-card">
+                <div class="preview-actions preview-actions-dual">
+                  <div class="controls controls-compact">
+                    <button id="multi-start-camera">打开本地视频</button>
+                    <button id="multi-start-realtime">连接实时视频</button>
+                    <button id="multi-send-frame">发送当前画面</button>
+                  </div>
+                </div>
+
+                <div class="preview-stage" id="multi-local-stage">
+                  <video id="multi-local-video" autoplay playsinline muted></video>
+                  <img id="multi-local-sticker-preview" alt="收到的贴图挂载预览" />
+                </div>
+              </section>
+
+              <section class="stage-panel clay-card">
+                <div class="preview-actions preview-actions-dual">
+                  <div class="controls controls-compact">
+                    <button id="multi-refresh-frame">拉取对方画面</button>
+                    <button id="multi-back-to-video">回到实时视频</button>
+                    <button id="multi-clear-sketch">清空对方草图</button>
+                    <button id="multi-generate-sticker" class="primary">给对方生成贴图</button>
+                    <button id="multi-send-sticker">发送当前候选</button>
+                  </div>
+                </div>
+
+                <div class="preview-stage" id="multi-remote-stage">
+                  <video id="multi-remote-video" autoplay playsinline muted></video>
+                  <img id="multi-remote-frame" alt="对方冻结帧" />
+                  <img id="multi-remote-sticker-preview" alt="对方挂载预览" />
+                  <canvas id="multi-remote-sketch-layer"></canvas>
+                </div>
+
+                <div class="mini-section">
+                  <div id="multi-remote-candidate-list" class="mini-tile-list"></div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-assets">
+          <div class="asset-grid">
+            <section class="asset-card clay-card">
+              <div id="discover-list" class="tile-list"></div>
+            </section>
+
+            <section class="asset-card clay-card">
+              <div id="mine-templates" class="tile-list"></div>
+            </section>
+
+            <section class="asset-card clay-card">
+              <div id="mine-assets" class="tile-list"></div>
+            </section>
+          </div>
+        </section>
+      </main>
+
+      <nav class="bottom-tabs">
+        <button class="tab-button active" data-tab="create">Tab1 单人创作</button>
+        <button class="tab-button" data-tab="multi">Tab2 双人/多人互动</button>
+        <button class="tab-button" data-tab="assets">Tab3 资产库</button>
+      </nav>
+    </div>
+
+    <script src="/app.js?v=20260419c" type="module"></script>
+  </body>
+</html>
