@@ -10,6 +10,8 @@ __pycache__/
 certs/
 data/
 debug_inputs/
+doc_source.docx
+demo_source.mp4
 
 # local notes and scratch files
 _snippet.txt
